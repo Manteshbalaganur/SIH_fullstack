@@ -4,8 +4,64 @@ import { LayoutDashboard, Plus, FolderOpen, FileText, Settings, TrendingUp, Tren
 import { useApp } from '../context/AppContext';
 import CircularityGauge from '../components/CircularityGauge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { assessmentAPI } from '../services/api';
+import { assessmentAPI } from '../service/api';
 import { useUser } from '@clerk/clerk-react';
+
+// Add this import
+import { Download  ,Loader} from 'lucide-react';
+import { pdfService } from '../service/pdfService';
+
+// Add this component inside your Results page
+const PDFDownloadButton: React.FC<{
+  assessmentId?: string; 
+  assessmentData: any 
+}> = ({ assessmentId, assessmentData }) => {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      await pdfService.downloadAssessmentPDF( assessmentId, assessmentData);
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleDownload}
+      disabled={downloading}
+      className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {downloading ? (
+        <Loader className="w-4 h-4 mr-2 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4 mr-2" />
+      )}
+      {downloading ? 'Generating PDF...' : 'Download PDF Report'}
+    </button>
+  );
+};
+
+// Usage in your Results page:
+// <PDFDownloadButton assessmentId={project.id} assessmentData={project} />
+
+// Usage in Dashboard (where you might not have full assessment data):
+// <PDFDownloadButton assessmentData={project} />
+
+// // Add download function
+// const handleDownloadPDF = async (projectId: string, projectName: string) => {
+//   try {
+//     await pdfService.downloadAssessmentPDF(projectId);
+//     console.log(`PDF for ${projectName} downloaded successfully`);
+//   } catch (error) {
+//     console.error('Failed to download PDF:', error);
+//     alert('Failed to download PDF. Please try again.');
+//   }
+// };
 
 const Dashboard: React.FC = () => {
   const { projects } = useApp();
@@ -345,36 +401,50 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
               <div className="space-y-3">
-                {allProjects.slice(0, 5).map(project => (
-                  <Link
-                    key={project.id}
-                    to={`/results/${project.id}`}
-                    className="block p-4 border border-slate-200 rounded-lg hover:border-teal-300 hover:bg-teal-50/50 transition-all group"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="font-semibold text-slate-800 group-hover:text-teal-700">
-                            {project.name}
-                          </h3>
-                          {project.source === 'backend' && (
-                            <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded">Cloud</span>
-                          )}
-                        </div>
-                        {/* <p className="text-sm text-slate-600 mt-1">
-                          {project.metalType.charAt(0).toUpperCase() + project.metalType.slice(1)} • {project.status}
-                        </p> */}
-                        <p className="text-sm text-slate-600 mt-1">
-                {project.metalType ? project.metalType.charAt(0).toUpperCase() + project.metalType.slice(1) : 'Unknown'} • {project.status}
-                </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-teal-700">{project.circularityScore}</div>
-                        <div className="text-xs text-slate-500">Score</div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
+               // Add download button to each project card (in the Recent Projects section)
+{allProjects.slice(0, 5).map(project => (
+  <Link
+    key={project.id}
+    to={`/results/${project.id}`}
+    className="block p-4 border border-slate-200 rounded-lg hover:border-teal-300 hover:bg-teal-50/50 transition-all group"
+  >
+    <div className="flex items-center justify-between">
+      <div className="flex-1">
+        <div className="flex items-center space-x-2">
+          <h3 className="font-semibold text-slate-800 group-hover:text-teal-700">
+            {project.name}
+          </h3>
+          {project.source === 'backend' && (
+            <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded">Cloud</span>
+          )}
+        </div>
+        <p className="text-sm text-slate-600 mt-1">
+          {project.metalType ? project.metalType.charAt(0).toUpperCase() + project.metalType.slice(1) : 'Unknown'} • {project.status}
+        </p>
+      </div>
+      <div className="flex items-center space-x-2">
+        <div className="text-right">
+          <div className="text-lg font-bold text-teal-700">{project.circularityScore}</div>
+          <div className="text-xs text-slate-500">Score</div>
+        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // handleDownloadPDF(project.id, project.name);
+            pdfService.downloadAssessmentPDF(project.id, project);
+            // pdfService.downloadAssessmentPDF(undefined, project);
+
+          }}
+          className="p-2 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+          title="Download PDF Report"
+        >
+          <Download className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </Link>
+))}
                 {allProjects.length === 0 && (
                   <div className="text-center py-8 text-slate-500">
                     <p>No projects yet</p>

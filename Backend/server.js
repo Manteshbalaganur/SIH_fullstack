@@ -1,9 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const pdfRoutes = require('./routes/pdf');
+
 require('dotenv').config();
 
 const app = express();
+
+
 
 // Middleware
 app.use(cors());
@@ -25,6 +29,9 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString()
   });
 });
+
+app.use('/api/pdf', pdfRoutes);
+
 
 // MongoDB connection (using local MongoDB for now)
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/circularmetals';

@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext';
 import { AssessmentInputs, MetalType, ProcessRoute, EnergySource, TransportMode, FuelType } from '../types';
 import { calculateEnvironmentalImpact, calculateCircularityScore } from '../utils/calculations';
 import CircularityGauge from '../components/CircularityGauge';
-import { assessmentAPI } from '../services/api';
+import { assessmentAPI } from '../service/api';
 import { useUser } from '@clerk/clerk-react';
 
 const NewAssessment: React.FC = () => {

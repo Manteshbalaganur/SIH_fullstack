@@ -4,8 +4,51 @@ import { ArrowLeft, Download, Share2, TrendingUp, DollarSign, Zap, Recycle, Targ
 import { useApp } from '../context/AppContext';
 import CircularityGauge from '../components/CircularityGauge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { assessmentAPI } from '../services/api';
+import { assessmentAPI } from '../service/api';
 
+
+import {  Loader } from 'lucide-react';
+import { pdfService } from '../service/pdfService';
+
+// Add this component inside your Results page
+const PDFDownloadButton: React.FC<{ assessmentId: string; assessmentData: any }> = ({ 
+  assessmentId, 
+  assessmentData 
+}) => {
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      await pdfService.downloadAssessmentPDF(assessmentId, assessmentData);
+      // Optional: Show success message
+      console.log('PDF downloaded successfully');
+    } catch (error) {
+      console.error('Failed to download PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleDownload}
+      disabled={downloading}
+      className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {downloading ? (
+        <Loader className="w-4 h-4 mr-2 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4 mr-2" />
+      )}
+      {downloading ? 'Generating PDF...' : 'Download PDF Report'}
+    </button>
+  );
+};
+
+// Usage in your Results component:
+// <PDFDownloadButton assessmentId={project.id} assessmentData={project} />
 // Interface for backend data
 interface BackendAssessment {
   _id: string;
