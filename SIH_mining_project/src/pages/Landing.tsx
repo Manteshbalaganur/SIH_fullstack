@@ -142,7 +142,17 @@ const Landing: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="relative bg-slate-900 rounded-2xl overflow-hidden shadow-2xl">
               <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-                <iframe width="6200" height="500" src="https://www.youtube.com/embed/--P3CQY8lYI?si=5YFSiPHJgrTfAIlt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                // In your Landing.tsx, change the iframe to this:
+<iframe 
+  width="6200" 
+  height="500" 
+  src="https://www.youtube.com/embed/--P3CQY8lYI?si=5YFSiPHJgrTfAIlt" 
+  title="YouTube video player" 
+  frameBorder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerPolicy="strict-origin-when-cross-origin" 
+  allowFullScreen
+></iframe>
               </div>
             </div>
 
