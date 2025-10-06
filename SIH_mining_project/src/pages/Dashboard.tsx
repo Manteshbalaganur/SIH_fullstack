@@ -401,7 +401,7 @@ const Dashboard: React.FC = () => {
                 </span>
               </div>
               <div className="space-y-3">
-               // Add download button to each project card (in the Recent Projects section)
+               {/* // Add download button to each project card (in the Recent Projects section) */}
 {allProjects.slice(0, 5).map(project => (
   <Link
     key={project.id}

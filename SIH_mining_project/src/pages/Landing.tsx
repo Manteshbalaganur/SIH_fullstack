@@ -142,7 +142,7 @@ const Landing: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             <div className="relative bg-slate-900 rounded-2xl overflow-hidden shadow-2xl">
               <div className="aspect-video flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
-                // In your Landing.tsx, change the iframe to this:
+                {/* // In your Landing.tsx, change the iframe to this: */}
 <iframe 
   width="6200" 
   height="500" 
